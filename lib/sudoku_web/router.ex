@@ -16,11 +16,12 @@ defmodule SudokuWeb.Router do
 
   scope "/", SudokuWeb do
     pipe_through :browser
+
     live "/", HallLive.Index, :index
+    live "/game", GameLive.Index, :index
   end
 
   if Application.compile_env(:sudoku, :dev_routes) do
-
     import Phoenix.LiveDashboard.Router
 
     scope "/dev" do
