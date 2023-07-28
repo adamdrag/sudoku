@@ -12,13 +12,6 @@ defmodule Sudoku.Helpers do
     }
   end
 
-  def remove_last_value_from_list(list) do
-    list
-    |> Enum.reverse()
-    |> tl()
-    |> Enum.reverse()
-  end
-
   def focus_squares do
     %{
       "0" => [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 18, 19, 20, 27, 30, 33, 54, 57, 60],

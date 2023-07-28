@@ -19,6 +19,7 @@ defmodule SudokuWeb.Router do
 
     live "/", HallLive.Index, :index
     live "/game", GameLive.Index, :index
+    live "game/status", GameLive.Index, :status
   end
 
   if Application.compile_env(:sudoku, :dev_routes) do
