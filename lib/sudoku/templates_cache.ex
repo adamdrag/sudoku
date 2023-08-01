@@ -1,6 +1,6 @@
 defmodule Sudoku.TemplatesCache do
   @moduledoc """
-  A process that loads a collection of buzzwords from an external source
+  A process that loads a collection of templates from an external source
   and caches them for expedient access. The cache is automatically
   refreshed every hour.
   """
@@ -40,7 +40,7 @@ defmodule Sudoku.TemplatesCache do
     Process.send_after(self(), :refresh, @refresh_interval)
   end
 
-  # Loads buzzwords from a method, though you could load
+  # Loads templates from a method, though you could load
   # them from any source, such as an external API.
   defp load_templates() do
     Sudoku.Templates.read_templates()

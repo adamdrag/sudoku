@@ -32,7 +32,7 @@ defmodule SudokuWeb.GameLive.Index do
       summary: summary,
       active_square: nil,
       active_number: nil,
-      selected_numbers: []
+      board_actions: []
     )
   end
 
@@ -48,12 +48,17 @@ defmodule SudokuWeb.GameLive.Index do
 
   def handle_event("select-number", %{"selected_number" => selected_number}, socket) do
     %{assigns: %{active_square: active_square}} = socket
-    select_number(socket, active_square, selected_number)
+    place_number(socket, active_square, selected_number)
   end
 
   def handle_event("undo", _params, socket) do
-    %{assigns: %{board_number: board_number, selected_numbers: selected_numbers}} = socket
-    remove_number(socket, board_number, selected_numbers)
+    %{assigns: %{board_number: board_number, board_actions: board_actions}} = socket
+    undo_action(socket, board_number, board_actions)
+  end
+
+  def handle_event("erase", _params, socket) do
+    %{assigns: %{active_square: active_square}} = socket
+    remove_number(socket, active_square)
   end
 
   def render(assigns) do
@@ -72,7 +77,7 @@ defmodule SudokuWeb.GameLive.Index do
       <.navigation level={@summary.status.level} mistakes={@summary.status.mistakes} />
       <.board board={@summary.board} active_square={@active_square} />
       <div class="flex m-auto w-max">
-        <.select_number
+        <.number
           :for={number <- 1..9}
           number={number}
           not_used_numbers={@summary.not_used_numbers[number] > 0}
@@ -104,6 +109,14 @@ defmodule SudokuWeb.GameLive.Index do
         >
           <.icon name="hero-arrow-uturn-left" class="h-8 w-8 m-auto" />
           <div class="text-2xl font-light hover:text-gray-900 hover:scale-125">Undo</div>
+        </button>
+      </div>
+      <div>
+        <button
+          phx-click="erase"
+          class="p-4 border-none hover:bg-transparent hover:text-gray-900 focus:bg-transparent focus:text-gray-600 active:bg-transparent active:text-gray-600"
+        >
+          <div class="text-2xl font-light hover:text-gray-900 hover:scale-125">Erase</div>
         </button>
       </div>
       <div class="flex items-center text-gray-600">
@@ -145,7 +158,7 @@ defmodule SudokuWeb.GameLive.Index do
     """
   end
 
-  def select_number(assigns) when assigns.not_used_numbers == true do
+  def number(assigns) when assigns.not_used_numbers == true do
     ~H"""
     <button
       phx-click="select-number"
@@ -157,7 +170,7 @@ defmodule SudokuWeb.GameLive.Index do
     """
   end
 
-  def select_number(assigns) do
+  def number(assigns) do
     ~H"""
     <div class="flex items-center justify-center rounded-full w-14 h-14 mx-2 font-light text-2xl text-red-500 hover:scale-125">
       <%= @number %>
@@ -165,47 +178,74 @@ defmodule SudokuWeb.GameLive.Index do
     """
   end
 
-  defp select_number(socket, active_square, _selected_number) when is_nil(active_square) do
+  defp place_number(socket, active_square, _selected_number) when is_nil(active_square) do
     {:noreply, socket}
   end
 
-  defp select_number(socket, active_square, selected_number) do
-    %{assigns: %{board_number: board_number, selected_numbers: selected_numbers}} = socket
+  defp place_number(socket, active_square, selected_number) do
+    %{assigns: %{board_number: board_number, board_actions: board_actions}} = socket
     selected_number = String.to_integer(selected_number)
     active_square = String.to_integer(active_square)
-    selected_numbers = [{active_square, selected_number} | selected_numbers]
+    board_actions = [{:added, active_square, selected_number} | board_actions]
     summary = GameServer.place_number(board_number, active_square, selected_number)
 
-    check_status(socket, summary, selected_numbers)
+    check_status(socket, summary, board_actions)
   end
 
-  defp remove_number(socket, _board_number, selected_numbers)
-       when length(selected_numbers) == 0 do
+  defp undo_action(socket, _board_number, board_actions)
+       when length(board_actions) == 0 do
     {:noreply, socket}
   end
 
-  defp remove_number(socket, board_number, selected_numbers) do
-    [{square_id, value} | tail_selected_numbers] = selected_numbers
+  defp undo_action(socket, board_number, board_actions) do
+    [{action, square_id, value} | tail_board_actions] = board_actions
+
+    summary =
+      case action do
+        :added -> GameServer.remove_number(board_number, square_id, value)
+        :erased -> GameServer.place_number(board_number, square_id, value)
+      end
 
     {:noreply,
      assign(socket,
-       summary: GameServer.remove_number(board_number, square_id, value),
-       selected_numbers: tail_selected_numbers
+       summary: summary,
+       board_actions: tail_board_actions
      )}
   end
 
-  defp check_status(socket, summary, _selected_numbers)
+  defp remove_number(socket, active_square) when is_nil(active_square) do
+    {:noreply, socket}
+  end
+
+  defp remove_number(socket, active_square) do
+    %{
+      assigns: %{
+        board_number: board_number,
+        summary: summary,
+        board_actions: board_actions
+      }
+    } = socket
+
+    square_id = String.to_integer(active_square)
+    value = Enum.find(summary.board, fn s -> s.square_id == square_id end).value
+    board_actions = [{:erased, square_id, value} | board_actions]
+    summary = GameServer.remove_number(board_number, square_id, value)
+
+    {:noreply, assign(socket, board_actions: board_actions, summary: summary)}
+  end
+
+  defp check_status(socket, summary, _board_actions)
        when summary.status.loss == true or summary.status.win == true do
     {:noreply, socket |> assign(summary: summary) |> push_patch(to: ~p"/game/status")}
   end
 
-  defp check_status(socket, summary, selected_numbers) do
+  defp check_status(socket, summary, board_actions) do
     {:noreply,
      assign(socket,
        summary: summary,
        active_square: nil,
        active_number: nil,
-       selected_numbers: selected_numbers
+       board_actions: board_actions
      )}
   end
 end
