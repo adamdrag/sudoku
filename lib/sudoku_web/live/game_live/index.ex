@@ -73,54 +73,37 @@ defmodule SudokuWeb.GameLive.Index do
       />
     </.modal_no_cancel>
 
-    <div class="my-12 w-max m-auto">
-      <.navigation level={@summary.status.level} mistakes={@summary.status.mistakes} />
+    <div class="w-max m-auto my-6">
+      <.navigation_top level={@summary.status.level} mistakes={@summary.status.mistakes} />
       <.board board={@summary.board} active_square={@active_square} />
-      <div class="flex m-auto w-max">
-        <.number
-          :for={number <- 1..9}
-          number={number}
-          not_used_numbers={@summary.not_used_numbers[number] > 0}
-        />
-      </div>
+      <.navigation_bottom summary={@summary} />
     </div>
     """
   end
 
-  def navigation(assigns) do
+  def navigation_top(assigns) do
     ~H"""
-    <div class="flex justify-around text-gray-600 py-2">
-      <div class="flex items-center">
-        <%= Helpers.human_readable_level()[@level] %>
-      </div>
-      <div>
-        <button
-          phx-click="leave-game"
-          class="p-4 border-none hover:bg-transparent hover:text-gray-900 focus:bg-transparent focus:text-gray-600 active:bg-transparent active:text-gray-600"
+    <div class="bg-indigo-400 rounded-t-3xl shadow-md shadow-gray-500">
+      <div class="h-10"></div>
+      <button phx-click="leave-game" class="px-8 py-3 text-white hover:text-gray-800">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="3"
+          stroke="currentColor"
+          class="w-6 h-6 hover:scale-105"
         >
-          <.icon name="hero-chevron-left" class="h-8 w-8 m-auto" />
-          <div class="text-2xl font-light hover:text-gray-900 hover:scale-125">Leave</div>
-        </button>
-      </div>
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+        </svg>
+      </button>
+    </div>
+    <div class="flex justify-between pt-8 pb-1 px-8 border-l border-r text-gray-600 items-center shadow-md shadow-gray-500">
       <div>
-        <button
-          phx-click="undo"
-          class="p-4 border-none hover:bg-transparent hover:text-gray-900 focus:bg-transparent focus:text-gray-600 active:bg-transparent active:text-gray-600"
-        >
-          <.icon name="hero-arrow-uturn-left" class="h-8 w-8 m-auto" />
-          <div class="text-2xl font-light hover:text-gray-900 hover:scale-125">Undo</div>
-        </button>
-      </div>
-      <div>
-        <button
-          phx-click="erase"
-          class="p-4 border-none hover:bg-transparent hover:text-gray-900 focus:bg-transparent focus:text-gray-600 active:bg-transparent active:text-gray-600"
-        >
-          <div class="text-2xl font-light hover:text-gray-900 hover:scale-125">Erase</div>
-        </button>
-      </div>
-      <div class="flex items-center text-gray-600">
         Mistakes: <%= @mistakes %>/3
+      </div>
+      <div>
+        Difficulty: <%= Helpers.human_readable_level()[@level] %>
       </div>
     </div>
     """
@@ -128,11 +111,11 @@ defmodule SudokuWeb.GameLive.Index do
 
   def board(assigns) do
     ~H"""
-    <div class="m-auto w-max my-4">
-      <div class="inline-grid grid-cols-3 gap-0 border-2 border-black">
+    <div class="flex justify-center border-l border-r border-b pb-8 shadow-md shadow-gray-500">
+      <div class="inline-grid grid-cols-3 gap-0 border-2 border-gray-800">
         <div
           :for={full_square <- Enum.chunk_every(@board, 9)}
-          class="inline-grid grid-cols-3 gap-0 border border-black"
+          class="inline-grid grid-cols-3 gap-0 border border-gray-800"
         >
           <.square :for={square <- full_square} square={square} active_square={@active_square} />
         </div>
@@ -149,12 +132,36 @@ defmodule SudokuWeb.GameLive.Index do
       class={[
         "#{if @square.number != @square.value, do: "text-red-500"}
         #{if @active_square && @square.square_id in Helpers.focus_squares()[@active_square], do: "bg-gray-200"}
-        col-span-1 flex items-center justify-center border border-black rounded-none w-14 h-14 font-medium
-        text-2xl hover:bg-gray-300 hover:text-black focus:bg-blue-200"
+        col-span-1 flex items-center justify-center border border-gray-800 rounded-none w-16 h-16
+        text-3xl hover:bg-gray-300 hover:text-black focus:bg-indigo-400 focus:text-white"
       ]}
     >
       <%= @square.value %>
     </button>
+    """
+  end
+
+  def navigation_bottom(assigns) do
+    ~H"""
+    <div class="bg-gray-200 rounded-b-3xl shadow-md shadow-gray-500">
+      <div class="flex justify-between py-4 px-8 text-gray-600">
+        <button phx-click="undo" class="hover:text-indigo-500 hover:scale-105">
+          <img class="mx-auto h-6 w-auto" src="/images/undo.png" />
+          <div class="">Undo</div>
+        </button>
+        <button phx-click="erase" class="hover:text-indigo-500 hover:scale-105">
+          <img class="mx-auto h-6 w-auto" src="/images/eraser.png" />
+          <div>Erase</div>
+        </button>
+      </div>
+      <div class="flex justify-between pt-2 pb-6">
+        <.number
+          :for={number <- 1..9}
+          number={number}
+          not_used_numbers={@summary.not_used_numbers[number] > 0}
+        />
+      </div>
+    </div>
     """
   end
 
@@ -163,17 +170,17 @@ defmodule SudokuWeb.GameLive.Index do
     <button
       phx-click="select-number"
       phx-value-selected_number={@number}
-      class="flex items-center justify-center rounded-full w-14 h-14 mx-2 font-light text-2xl text-blue-500 hover:scale-125"
+      class="flex items-center justify-center border rounded-lg shadow-md w-10 h-12 mx-2 font-light bg-white text-2xl text-indigo-500 hover:scale-105"
     >
-      <%= @number %>
+      <div class="font-medium"><%= @number %></div>
     </button>
     """
   end
 
   def number(assigns) do
     ~H"""
-    <div class="flex items-center justify-center rounded-full w-14 h-14 mx-2 font-light text-2xl text-red-500 hover:scale-125">
-      <%= @number %>
+    <div class="flex items-center justify-center border rounded-lg shadow-md w-10 h-12 mx-2 font-light bg-gray-300 text-2xl text-gray-600">
+      <div class="font-medium"><%= @number %></div>
     </div>
     """
   end

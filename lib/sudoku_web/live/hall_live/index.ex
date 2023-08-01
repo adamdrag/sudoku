@@ -3,28 +3,22 @@ defmodule SudokuWeb.HallLive.Index do
   alias Phoenix.LiveView.JS
 
   def mount(_params, _session, socket) do
-    {:ok, assign(socket, show_level_buttons: false)}
+    {:ok, socket}
   end
 
   def render(assigns) do
     ~H"""
-    <div class="h-full w-96 mt-96 m-auto text-center">
-      <div class="text-blue-500">
-        <div class="text-4xl">Sudoku</div>
-        <button
-          phx-click={
-            JS.show(to: "#levels", transition: {"ease-out duration-300", "opacity-0", "opacity-100"})
-          }
-          class="my-8 px-20 text-3xl bg-white rounded-full border-transparent shadow-lg shadow-gray-500/20 hover:bg-blue-500 hover:text-white focus:bg-blue-500 focus:text-white"
-        >
-          New Game
-        </button>
-        <div id="levels" class={unless @show_level_buttons, do: "hidden"}>
-          <.level level_id="1" text="Easy" />
-          <.level level_id="2" text="Medium" />
-          <.level level_id="3" text="Hard" />
-          <.level level_id="4" text="Expert" />
-        </div>
+    <div class="m-auto my-6 w-144">
+      <div class="bg-indigo-400 rounded-t-3xl shadow-md shadow-gray-500">
+        <div class="pt-12 pb-1 text-2xl text-white text-center">Sudoku</div>
+      </div>
+      <div class="h-144 py-16 border-l border-r shadow-md shadow-gray-500">
+        <.level level_id="1" text="Easy" />
+        <.level level_id="2" text="Medium" />
+        <.level level_id="3" text="Hard" />
+        <.level level_id="4" text="Expert" />
+      </div>
+      <div class="bg-gray-200 rounded-b-3xl h-24 shadow-md shadow-gray-500">
       </div>
     </div>
     """
@@ -36,7 +30,7 @@ defmodule SudokuWeb.HallLive.Index do
     ~H"""
     <.link
       navigate={~p"/game?level=#{@level_id}&board=#{@board_number}"}
-      class="block m-auto my-4 px-16 text-2xl bg-white rounded-full border-transparent shadow-lg shadow-gray-500/20 hover:bg-blue-500 hover:text-white"
+      class="block mx-auto w-80 my-4 text-center px-20 text-xl bg-indigo-400 text-white rounded-full shadow-md shadow-gray-800 hover:scale-105"
     >
       <%= @text %>
     </.link>

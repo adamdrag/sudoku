@@ -15,6 +15,12 @@ module.exports = {
     extend: {
       colors: {
         brand: "#FD4F00",
+      },
+      width: {
+        144: "36.75rem",
+      },
+      height: {
+        144: "36rem",
       }
     },
   },
