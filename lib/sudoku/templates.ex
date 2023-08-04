@@ -4,12 +4,12 @@ defmodule Sudoku.Templates do
   def get_template(level) when is_binary(level) do
     level = String.to_integer(level)
     board_number = Enum.random(1..templete_count_by_level(level))
-    build_tamplate_tuple(level, board_number)
+    build_tamplate(level, board_number)
   end
 
   def get_template(level) do
     board_number = Enum.random(1..templete_count_by_level(level))
-    build_tamplate_tuple(level, board_number)
+    build_tamplate(level, board_number)
   end
 
   defp templete_count_by_level(level) do
@@ -19,17 +19,16 @@ defmodule Sudoku.Templates do
     |> length()
   end
 
-  defp build_tamplate_tuple(level, board_number) do
+  defp build_tamplate(level, board_number) do
     template = TemplatesCache.get_templates()[{level, board_number}]
 
     Enum.map(ids(), fn id ->
       id = String.to_integer(id)
       starting_number = Enum.at(template.starting_numbers, id) |> String.to_integer()
       solved_number = Enum.at(template.solved_numbers, id) |> String.to_integer()
+      starting_number = if starting_number == 0, do: nil, else: starting_number
 
-      Tuple.append({}, id)
-      |> Tuple.append(if starting_number == 0, do: nil, else: starting_number)
-      |> Tuple.append(solved_number)
+      {id, starting_number, solved_number}
     end)
   end
 

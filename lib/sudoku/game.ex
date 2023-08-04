@@ -3,19 +3,8 @@ defmodule Sudoku.Game do
             not_used_numbers: %{},
             status: %{}
 
-  alias Sudoku.{Game, Square, Status, Templates}
+  alias Sudoku.{Game, Square, Status, Templates, Helpers}
 
-  @not_used_numbers %{
-    1 => 9,
-    2 => 9,
-    3 => 9,
-    4 => 9,
-    5 => 9,
-    6 => 9,
-    7 => 9,
-    8 => 9,
-    9 => 9
-  }
   @max_mistakes_number 3
 
   def new(level) do
@@ -25,7 +14,7 @@ defmodule Sudoku.Game do
       Enum.map(template, fn {square_id, value, number} -> Square.new(square_id, value, number) end)
 
     not_used_numbers =
-      Enum.reduce(template, @not_used_numbers, fn {_square_id, value, number}, acc ->
+      Enum.reduce(template, Helpers.not_used_numbers(), fn {_square_id, value, number}, acc ->
         case value do
           nil -> acc
           _ -> Map.put(acc, number, Map.get(acc, number) - 1)

@@ -10,7 +10,6 @@ defmodule Sudoku.GameServer do
   @doc """
   Spawns a new game server process registered under the given `game_name`.
   """
-
   def start_link(game_name, level) do
     GenServer.start_link(
       __MODULE__,
