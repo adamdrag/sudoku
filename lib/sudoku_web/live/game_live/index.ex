@@ -5,11 +5,11 @@ defmodule SudokuWeb.GameLive.Index do
   def mount(%{"board" => board_number, "level" => level}, _session, socket) do
     case GameServer.game_pid(board_number) do
       pid when is_pid(pid) ->
-        {:ok, assign_initial_states(socket, board_number)}
+        {:ok, assign_initial_states(socket, board_number, level)}
 
       nil ->
         GameSupervisor.start_game(board_number, level)
-        {:ok, assign_initial_states(socket, board_number)}
+        {:ok, assign_initial_states(socket, board_number, level)}
     end
   end
 
@@ -24,11 +24,12 @@ defmodule SudokuWeb.GameLive.Index do
     {:noreply, socket}
   end
 
-  defp assign_initial_states(socket, board_number) do
+  defp assign_initial_states(socket, board_number, level) do
     summary = GameServer.summary(board_number)
 
     assign(socket,
       board_number: board_number,
+      level: level,
       summary: summary,
       active_square: nil,
       active_number: nil,
@@ -73,7 +74,7 @@ defmodule SudokuWeb.GameLive.Index do
       />
     </.modal_no_cancel>
 
-    <div class="w-max m-auto my-6">
+    <div class="sm:w-max w-full m-auto sm:my-6 my-0">
       <.navigation_top level={@summary.status.level} mistakes={@summary.status.mistakes} />
       <.board board={@summary.board} active_square={@active_square} />
       <.navigation_bottom summary={@summary} />
@@ -84,7 +85,7 @@ defmodule SudokuWeb.GameLive.Index do
   def navigation_top(assigns) do
     ~H"""
     <div class="bg-indigo-400 rounded-t-3xl shadow-md shadow-gray-500">
-      <div class="h-10"></div>
+      <div class="sm:h-10 h-2"></div>
       <button phx-click="leave-game" class="px-8 py-3 text-white hover:text-gray-800">
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -98,7 +99,7 @@ defmodule SudokuWeb.GameLive.Index do
         </svg>
       </button>
     </div>
-    <div class="flex justify-between pt-8 pb-1 px-8 border-l border-r text-gray-600 items-center shadow-md shadow-gray-500">
+    <div class="flex justify-between sm:pt-8 pt-2 pb-1 px-8 border-l border-r text-gray-600 items-center shadow-md shadow-gray-500">
       <div>
         Mistakes: <%= @mistakes %>/3
       </div>
@@ -132,8 +133,8 @@ defmodule SudokuWeb.GameLive.Index do
       class={[
         "#{if @square.number != @square.value, do: "text-red-500"}
         #{if @active_square && @square.square_id in Helpers.focus_squares()[@active_square], do: "bg-gray-200"}
-        col-span-1 flex items-center justify-center border border-gray-800 rounded-none w-16 h-16
-        text-3xl hover:bg-gray-300 hover:text-black focus:bg-indigo-400 focus:text-white"
+        col-span-1 flex items-center justify-center border border-gray-800 rounded-none sm:w-16 w-10 sm:h-16 h-10
+        sm:text-3xl text-lg hover:bg-gray-300 hover:text-black focus:bg-indigo-400 focus:text-white"
       ]}
     >
       <%= @square.value %>
@@ -154,7 +155,7 @@ defmodule SudokuWeb.GameLive.Index do
           <div>Erase</div>
         </button>
       </div>
-      <div class="flex justify-between pt-2 pb-6">
+      <div class="flex justify-between sm:pt-2 pt-0 pb-6">
         <.number
           :for={number <- 1..9}
           number={number}
@@ -243,7 +244,12 @@ defmodule SudokuWeb.GameLive.Index do
 
   defp check_status(socket, summary, _board_actions)
        when summary.status.loss == true or summary.status.win == true do
-    {:noreply, socket |> assign(summary: summary) |> push_patch(to: ~p"/game/status")}
+    %{assigns: %{board_number: board_number, level: level}} = socket
+
+    {:noreply,
+     socket
+     |> assign(summary: summary)
+     |> push_patch(to: ~p"/game/status?level=#{level}&board=#{board_number}")}
   end
 
   defp check_status(socket, summary, board_actions) do

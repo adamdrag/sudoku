@@ -15,31 +15,35 @@ defmodule SudokuWeb.GameLive.ModalStatus do
 
   def render(%{status: :loss} = assigns) do
     ~H"""
-    <div class="flex text-center">
-      <div class="text-gray-800 text-4xl">Game Over!</div>
-      <button
-        phx-click="leave-game"
-        phx-value-board_number={@board_number}
-        class="my-8 px-20 text-3xl bg-white rounded-full border-transparent shadow-lg shadow-gray-500/20 hover:bg-blue-500 hover:text-white focus:bg-blue-500 focus:text-white"
-      >
-        Start New Game
-      </button>
+    <div>
+      <.message_section board_number={@board_number} text="Game Over!" />
     </div>
     """
   end
 
   def render(%{status: :win} = assigns) do
     ~H"""
-    <div class="flex text-center">
-      <div class="text-gray-800 text-4xl">You Win!</div>
+    <div>
+      <.message_section board_number={@board_number} text="You Win!" />
+    </div>
+    """
+  end
+
+  def message_section(assigns) do
+    ~H"""
+    <div class="bg-indigo-400 rounded-t-3xl">
+      <div class="p-1 text-2xl text-white text-center">You Win!</div>
+    </div>
+    <div class="border-l border-r border-gray-200 pt-4 pb-8">
       <button
         phx-click="leave-game"
         phx-value-board_number={@board_number}
-        class="my-8 px-20 text-3xl bg-white rounded-full border-transparent shadow-lg shadow-gray-500/20 hover:bg-blue-500 hover:text-white focus:bg-blue-500 focus:text-white"
+        class="block mx-auto text-center sm:px-20 px-4 text-xl bg-indigo-400 text-white rounded-full shadow-md shadow-gray-500 hover:scale-105"
       >
         Start New Game
       </button>
     </div>
+    <div class="h-6 bg-gray-200 rounded-b-3xl" />
     """
   end
 end

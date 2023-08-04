@@ -1,6 +1,5 @@
 defmodule SudokuWeb.HallLive.Index do
   use SudokuWeb, :live_view
-  alias Phoenix.LiveView.JS
 
   def mount(_params, _session, socket) do
     {:ok, socket}
@@ -8,18 +7,17 @@ defmodule SudokuWeb.HallLive.Index do
 
   def render(assigns) do
     ~H"""
-    <div class="m-auto my-6 w-144">
+    <div class="m-auto my-6 sm:w-144 w-full">
       <div class="bg-indigo-400 rounded-t-3xl shadow-md shadow-gray-500">
         <div class="pt-12 pb-1 text-2xl text-white text-center">Sudoku</div>
       </div>
-      <div class="h-144 py-16 border-l border-r shadow-md shadow-gray-500">
+      <div class="sm:h-144 h-92 py-16 border-l border-r shadow-md shadow-gray-500">
         <.level level_id="1" text="Easy" />
         <.level level_id="2" text="Medium" />
         <.level level_id="3" text="Hard" />
         <.level level_id="4" text="Expert" />
       </div>
-      <div class="bg-gray-200 rounded-b-3xl h-24 shadow-md shadow-gray-500">
-      </div>
+      <div class="bg-gray-200 rounded-b-3xl h-24 shadow-md shadow-gray-500" />
     </div>
     """
   end
