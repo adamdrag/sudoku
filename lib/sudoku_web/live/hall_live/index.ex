@@ -7,11 +7,11 @@ defmodule SudokuWeb.HallLive.Index do
 
   def render(assigns) do
     ~H"""
-    <div class="m-auto my-6 sm:w-144 w-full">
+    <div class="m-auto my-4 px-4 sm:w-111 w-full">
       <div class="bg-indigo-400 rounded-t-3xl shadow-md shadow-gray-500">
         <div class="pt-12 pb-1 text-2xl text-white text-center">Sudoku</div>
       </div>
-      <div class="sm:h-144 h-92 py-16 border-l border-r shadow-md shadow-gray-500">
+      <div class="py-16 border-l border-r shadow-md shadow-gray-500">
         <.level level_id="1" text="Easy" />
         <.level level_id="2" text="Medium" />
         <.level level_id="3" text="Hard" />

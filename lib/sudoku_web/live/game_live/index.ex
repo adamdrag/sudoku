@@ -74,7 +74,7 @@ defmodule SudokuWeb.GameLive.Index do
       />
     </.modal_no_cancel>
 
-    <div class="sm:w-max w-full m-auto sm:my-6 my-0">
+    <div class="sm:w-max w-full m-auto my-4 px-4">
       <.navigation_top level={@summary.status.level} mistakes={@summary.status.mistakes} />
       <.board board={@summary.board} active_square={@active_square} />
       <.navigation_bottom summary={@summary} />
@@ -85,7 +85,7 @@ defmodule SudokuWeb.GameLive.Index do
   def navigation_top(assigns) do
     ~H"""
     <div class="bg-indigo-400 rounded-t-3xl shadow-md shadow-gray-500">
-      <div class="sm:h-10 h-2"></div>
+      <div class="sm:h-6 h-2"></div>
       <button phx-click="leave-game" class="px-8 py-3 text-white hover:text-gray-800">
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -112,7 +112,7 @@ defmodule SudokuWeb.GameLive.Index do
 
   def board(assigns) do
     ~H"""
-    <div class="flex justify-center border-l border-r border-b pb-8 shadow-md shadow-gray-500">
+    <div class="flex justify-center border-l border-r border-b pb-4 shadow-md shadow-gray-500">
       <div class="inline-grid grid-cols-3 gap-0 border-2 border-gray-800">
         <div
           :for={full_square <- Enum.chunk_every(@board, 9)}
@@ -133,7 +133,7 @@ defmodule SudokuWeb.GameLive.Index do
       class={[
         "#{if @square.number != @square.value, do: "text-red-500"}
         #{if @active_square && @square.square_id in Helpers.focus_squares()[@active_square], do: "bg-gray-200"}
-        col-span-1 flex items-center justify-center border border-gray-800 rounded-none sm:w-16 w-10 sm:h-16 h-10
+        col-span-1 flex items-center justify-center border border-gray-800 rounded-none sm:w-12 w-10 sm:h-12 h-10
         sm:text-3xl text-lg hover:bg-gray-300 hover:text-black focus:bg-indigo-400 focus:text-white"
       ]}
     >
@@ -147,15 +147,15 @@ defmodule SudokuWeb.GameLive.Index do
     <div class="bg-gray-200 rounded-b-3xl shadow-md shadow-gray-500">
       <div class="flex justify-between py-4 px-8 text-gray-600">
         <button phx-click="undo" class="hover:text-indigo-500 hover:scale-105">
-          <img class="mx-auto h-6 w-auto" src="/images/undo.png" />
+          <img class="mx-auto h-5 w-auto" src="/images/undo.png" />
           <div class="">Undo</div>
         </button>
         <button phx-click="erase" class="hover:text-indigo-500 hover:scale-105">
-          <img class="mx-auto h-6 w-auto" src="/images/eraser.png" />
+          <img class="mx-auto h-5 w-auto" src="/images/eraser.png" />
           <div>Erase</div>
         </button>
       </div>
-      <div class="flex justify-between sm:pt-2 pt-0 pb-6">
+      <div class="flex justify-between pt-0 pb-4">
         <.number
           :for={number <- 1..9}
           number={number}
@@ -171,7 +171,7 @@ defmodule SudokuWeb.GameLive.Index do
     <button
       phx-click="select-number"
       phx-value-selected_number={@number}
-      class="flex items-center justify-center border rounded-lg shadow-md w-10 h-12 mx-2 font-light bg-white text-2xl text-indigo-500 hover:scale-105"
+      class="flex items-center justify-center border rounded-lg shadow-md w-8 h-10 mx-2 font-light bg-white text-2xl text-indigo-500 hover:scale-105"
     >
       <div class="font-medium"><%= @number %></div>
     </button>
@@ -180,7 +180,7 @@ defmodule SudokuWeb.GameLive.Index do
 
   def number(assigns) do
     ~H"""
-    <div class="flex items-center justify-center border rounded-lg shadow-md w-10 h-12 mx-2 font-light bg-gray-300 text-2xl text-gray-600">
+    <div class="flex items-center justify-center border rounded-lg shadow-md w-8 h-10 mx-2 font-light bg-gray-300 text-2xl text-gray-600">
       <div class="font-medium"><%= @number %></div>
     </div>
     """

@@ -17,6 +17,7 @@ module.exports = {
         brand: "#FD4F00",
       },
       width: {
+        111: "27.75rem",
         144: "36.75rem",
       },
       height: {
