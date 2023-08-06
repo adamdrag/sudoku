@@ -111,24 +111,3 @@ defmodule Sudoku.GameServer do
     Registry.keys(Sudoku.GameRegistry, self()) |> List.first()
   end
 end
-
-# --------- Testing This Module --------------
-# iex(1)> Sudoku.GameServer.start_link("43535", 1)
-#     [info] Spawned game server process named '43535'.
-#     {:ok, #PID<0.366.0>}
-# iex(2)> summary = Sudoku.GameServer.summary("43535")
-#     %{
-#       board: [
-#         %Sudoku.Square{number: 4, square_id: 0, value: nil},
-#         %Sudoku.Square{...},
-#         ...
-#       ],
-#       loss: nil,
-#       mistakes: 0,
-#       not_used_numbers: %{
-#         1 => 4,
-#         ...
-#       },
-#       win: nil
-#     }
-# iex(3)> Sudoku.GameServer.place_number("43535", 1, 4)

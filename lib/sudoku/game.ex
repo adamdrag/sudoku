@@ -78,7 +78,3 @@ defmodule Sudoku.Game do
     end
   end
 end
-
-# iex() > game = Sudoku.Game.new(1)
-# iex()> game = Sudoku.Game.place_number(game, 1, 4)
-# iex()> game = Sudoku.Game.remove_number(game, 1, 4)
