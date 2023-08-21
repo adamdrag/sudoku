@@ -9,6 +9,7 @@ defmodule Sudoku.Game do
 
   def new(level) do
     template = Templates.get_template(level)
+    # IO.inspect(template)
 
     board =
       Enum.map(template, fn {square_id, value, number} -> Square.new(square_id, value, number) end)
@@ -25,6 +26,8 @@ defmodule Sudoku.Game do
   end
 
   def place_number(game, square_id, value) do
+    IO.inspect(game)
+
     game
     |> update_board_with_mark(square_id, value)
     |> update_not_used_numbers(value, :-)
