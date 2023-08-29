@@ -32,7 +32,7 @@ defmodule SudokuWeb.GameLive.ModalStatus do
   def message_section(assigns) do
     ~H"""
     <div class="bg-indigo-400 rounded-t-3xl">
-      <div class="p-1 text-2xl text-white text-center">You Win!</div>
+      <div class="p-1 text-2xl text-white text-center"><%= @text %></div>
     </div>
     <div class="border-l border-r border-gray-200 pt-4 pb-8">
       <button

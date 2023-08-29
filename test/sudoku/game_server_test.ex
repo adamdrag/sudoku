@@ -3,17 +3,17 @@ defmodule Sudoku.GameServerTest do
   alias Sudoku.{GameServer, Game}
 
   test "spawning a game server process" do
-    assert {:ok, _pid} = GameServer.start_link("1234", 1)
+    assert {:ok, _pid} = GameServer.start_link("123456", 1)
   end
 
   test "a game process is registered under a unique name" do
-    assert {:ok, _pid} = GameServer.start_link("1234", 1)
+    assert {:ok, _pid} = GameServer.start_link("123456", 1)
 
-    assert {:error, _reason} = GameServer.start_link("1234", 1)
+    assert {:error, _reason} = GameServer.start_link("123456", 1)
   end
 
   test "getting a summary" do
-    game_name = "1234"
+    game_name = "123456"
     {:ok, _pid} = GameServer.start_link(game_name, 1)
 
     summary = GameServer.summary(game_name)
@@ -26,7 +26,7 @@ defmodule Sudoku.GameServerTest do
   end
 
   test "marking square" do
-    game_name = "1234"
+    game_name = "123456"
     {:ok, _pid} = GameServer.start_link(game_name, 0)
 
     summary = GameServer.place_number(game_name, 0, 4)
@@ -37,7 +37,7 @@ defmodule Sudoku.GameServerTest do
   end
 
   test "stores initial state in ETS when started" do
-    game_name = "1234"
+    game_name = "123456"
     {:ok, _pid} = GameServer.start_link(game_name, 0)
 
     assert [{^game_name, game}] = :ets.lookup(:games_table, game_name)
@@ -45,7 +45,7 @@ defmodule Sudoku.GameServerTest do
   end
 
   test "gets its initial state from ETS if previously stored" do
-    game_name = "1234"
+    game_name = "123456"
 
     game = Game.new(0)
     game = Game.place_number(game, 0, 4)
@@ -63,7 +63,7 @@ defmodule Sudoku.GameServerTest do
 
   describe "game_pid" do
     test "returns a PID if it has been registered" do
-      game_name = "1234"
+      game_name = "123456"
       {:ok, pid} = GameServer.start_link(game_name, 0)
 
       assert ^pid = GameServer.game_pid(game_name)

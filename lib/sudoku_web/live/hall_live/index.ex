@@ -23,11 +23,12 @@ defmodule SudokuWeb.HallLive.Index do
   end
 
   defp level(assigns) do
-    assigns = assign(assigns, :board_number, Enum.random(0..9999))
+    assigns = assign(assigns, :board_number, Enum.random(100_000..999_999))
 
     ~H"""
     <.link
-      navigate={~p"/game?level=#{@level_id}&board=#{@board_number}"}
+      href={~p"/game?level=#{@level_id}&board=#{@board_number}"}
+      method="post"
       class="block mx-auto w-80 my-4 text-center px-20 text-xl bg-indigo-400 text-white rounded-full shadow-md shadow-gray-800 hover:scale-105"
     >
       <%= @text %>

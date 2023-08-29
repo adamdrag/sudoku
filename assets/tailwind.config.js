@@ -22,7 +22,10 @@ module.exports = {
       },
       height: {
         144: "36rem",
-      }
+      },
+      minWidth: {
+        80: "20rem",
+      },
     },
   },
   plugins: [

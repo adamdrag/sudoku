@@ -3,3 +3,27 @@
 @import "tailwindcss/utilities";
 
 /* This file is for your main application CSS */
+
+/* Fade Out element after 3 seconds */
+@keyframes fade-out {
+  0% {
+    opacity: 1;
+  }
+
+  90% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+.fade-out {
+  animation-name: fade-out;
+}
+
+.animated {
+  animation-duration: 3s;
+  animation-fill-mode: both;
+}

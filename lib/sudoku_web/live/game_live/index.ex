@@ -13,13 +13,6 @@ defmodule SudokuWeb.GameLive.Index do
     end
   end
 
-  def mount(_params, _session, socket) do
-    {:ok,
-     socket
-     |> put_flash(:error, "Can't find that board. Start a new game!")
-     |> push_redirect(to: ~p"/")}
-  end
-
   def handle_params(_params, _url, socket) do
     {:noreply, socket}
   end

@@ -18,8 +18,13 @@ defmodule SudokuWeb.Router do
     pipe_through :browser
 
     live "/", HallLive.Index, :index
-    live "/game", GameLive.Index, :index
-    live "game/status", GameLive.Index, :status
+    post("/game", GameSessionController, :create)
+
+    live_session :ensure_authenticated,
+      on_mount: [{SudokuWeb.UserAuth, :ensure_authenticated}] do
+      live "/game", GameLive.Index, :index
+      live "game/status", GameLive.Index, :status
+    end
   end
 
   if Application.compile_env(:sudoku, :dev_routes) do
