@@ -16,6 +16,7 @@ defmodule SudokuWeb.HallLive.Index do
         <.level level_id="2" text="Medium" />
         <.level level_id="3" text="Hard" />
         <.level level_id="4" text="Expert" />
+        <.level level_id="5" text="Evil" />
       </div>
       <div class="bg-gray-200 rounded-b-3xl h-24 shadow-md shadow-gray-500" />
     </div>

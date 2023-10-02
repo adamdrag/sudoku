@@ -5,10 +5,12 @@ defmodule Sudoku.Helpers do
       2 => "Medium",
       3 => "Hard",
       4 => "Expert",
+      5 => "Evil",
       "1" => "Easy",
       "2" => "Medium",
       "3" => "Hard",
-      "4" => "Expert"
+      "4" => "Expert",
+      "5" => "Evil"
     }
   end
 

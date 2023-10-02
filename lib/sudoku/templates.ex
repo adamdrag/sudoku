@@ -52,6 +52,24 @@ defmodule Sudoku.Templates do
     Enum.reverse(game_board_numbers)
   end
 
+  @doc """
+  Parse template
+  ## Examples
+      iex> parse_template(
+        "009008600000040100002000970006000200008500000250003001070000900001000700000030560",
+        "319758642657249183842316975196487235378512496254693781573864921861925734429137568"
+      )
+  """
+  def parse_template(starting_numbers_string, solved_numbers_string) do
+    starting_numbers_list = String.codepoints(starting_numbers_string)
+    solved_numbers_list = String.codepoints(solved_numbers_string)
+
+    Enum.zip([starting_numbers_list, solved_numbers_list])
+    |> Enum.reduce("", fn {starting_num, solved_num}, acc ->
+      acc <> "#{starting_num} #{solved_num},"
+    end)
+  end
+
   def validate_templates() do
     "../../data/sudoku_templates.csv"
     |> Path.expand(__DIR__)
