@@ -3,37 +3,22 @@ defmodule Sudoku.Templates do
 
   def get_template(level) when is_binary(level) do
     level = String.to_integer(level)
-    board_number = Enum.random(1..count_templete_per_level(level))
+    board_number = Enum.random(templete_ids_per_level(level))
     template = TemplatesCache.get_templates()[{level, board_number}]
     build_game_board(template, 0, [])
   end
 
   def get_template(level) do
-    board_number = Enum.random(1..count_templete_per_level(level))
+    board_number = Enum.random(templete_ids_per_level(level))
     template = TemplatesCache.get_templates()[{level, board_number}]
     build_game_board(template, 0, [])
   end
 
-  defp count_templete_per_level(level) do
+  defp templete_ids_per_level(level) do
     TemplatesCache.get_templates()
     |> Map.keys()
-    |> Enum.filter(fn {d, _l} -> d == level end)
-    |> length()
-  end
-
-  # That data could be fetched from database or external API
-  def read_templates() do
-    "../../data/sudoku_templates.csv"
-    |> Path.expand(__DIR__)
-    |> File.read!()
-    |> String.split("\n", trim: true)
-    |> Enum.map(&String.split(&1, ","))
-    |> Enum.map(fn game ->
-      [level_and_gameid | game_numbers] = game
-      [level, gameid] = String.split(level_and_gameid, " ")
-      {{String.to_integer(level), String.to_integer(gameid)}, game_numbers}
-    end)
-    |> Map.new()
+    |> Enum.filter(fn {l, _id} -> l == level end)
+    |> Enum.map(fn {_l, template_id} -> template_id end)
   end
 
   def build_game_board(template, square_id, game_board_numbers) when template != [] do
@@ -52,33 +37,44 @@ defmodule Sudoku.Templates do
     Enum.reverse(game_board_numbers)
   end
 
-  @doc """
-  Parse template
-  ## Examples
-      iex> parse_template(
-        "009008600000040100002000970006000200008500000250003001070000900001000700000030560",
-        "319758642657249183842316975196487235378512496254693781573864921861925734429137568"
-      )
-  """
-  def parse_template(starting_numbers_string, solved_numbers_string) do
-    starting_numbers_list = String.codepoints(starting_numbers_string)
-    solved_numbers_list = String.codepoints(solved_numbers_string)
-
-    Enum.zip([starting_numbers_list, solved_numbers_list])
-    |> Enum.reduce("", fn {starting_num, solved_num}, acc ->
-      acc <> "#{starting_num} #{solved_num},"
-    end)
-  end
-
-  def validate_templates() do
+  def read_templates() do
     "../../data/sudoku_templates.csv"
     |> Path.expand(__DIR__)
     |> File.read!()
     |> String.split("\n", trim: true)
     |> Enum.map(&String.split(&1, ","))
     |> Enum.map(fn game ->
-      [level_and_gameid | game_numbers] = game
-      [level, gameid] = String.split(level_and_gameid, " ")
+      [template_id, level, starting_numbers_string, solved_numbers_string] = game
+      starting_numbers_list = String.codepoints(starting_numbers_string)
+      solved_numbers_list = String.codepoints(solved_numbers_string)
+
+      game_numbers =
+        Enum.zip([starting_numbers_list, solved_numbers_list])
+        |> Enum.map(fn {starting_num, solved_num} ->
+          "#{starting_num} #{solved_num}"
+        end)
+
+      {{String.to_integer(level), String.to_integer(template_id)}, game_numbers}
+    end)
+    |> Map.new()
+  end
+
+  def validate_raw_templates() do
+    "../../data/sudoku_templates.csv"
+    |> Path.expand(__DIR__)
+    |> File.read!()
+    |> String.split("\n", trim: true)
+    |> Enum.map(&String.split(&1, ","))
+    |> Enum.map(fn game ->
+      [level, game_id, starting_numbers_string, solved_numbers_string] = game
+      starting_numbers_list = String.codepoints(starting_numbers_string)
+      solved_numbers_list = String.codepoints(solved_numbers_string)
+
+      game_numbers =
+        Enum.zip([starting_numbers_list, solved_numbers_list])
+        |> Enum.map(fn {starting_num, solved_num} ->
+          "#{starting_num} #{solved_num}"
+        end)
 
       checked_template =
         Enum.reduce(
@@ -98,7 +94,7 @@ defmodule Sudoku.Templates do
             [starting_number, solved_number] = String.split(square, " ")
 
             if starting_number != "0" and starting_number != solved_number do
-              IO.inspect("Invalid starting number: #{starting_number} - {#{level}, #{gameid}}")
+              IO.inspect("Invalid starting number: #{starting_number} - {#{level}, #{game_id}}")
             end
 
             case solved_number do
@@ -117,7 +113,7 @@ defmodule Sudoku.Templates do
         )
 
       is_valid? = if checked_template == valid_board(), do: :valid, else: :invalid
-      {{String.to_integer(level), String.to_integer(gameid)}, is_valid?}
+      {{String.to_integer(level), String.to_integer(game_id)}, is_valid?}
     end)
     |> Map.new()
   end
