@@ -3,37 +3,38 @@ defmodule Sudoku.Templates do
 
   def get_template(level) when is_binary(level) do
     level = String.to_integer(level)
-    board_number = Enum.random(templete_ids_per_level(level))
-    template = TemplatesCache.get_templates()[{level, board_number}]
+    templete_id = Enum.random(templete_ids_per_level(level))
+    template = TemplatesCache.get_templates()[{templete_id, level}]
     build_game_board(template, 0, [])
   end
 
   def get_template(level) do
-    board_number = Enum.random(templete_ids_per_level(level))
-    template = TemplatesCache.get_templates()[{level, board_number}]
+    templete_id = Enum.random(templete_ids_per_level(level))
+    template = TemplatesCache.get_templates()[{templete_id, level}]
     build_game_board(template, 0, [])
   end
 
   defp templete_ids_per_level(level) do
     TemplatesCache.get_templates()
     |> Map.keys()
-    |> Enum.filter(fn {l, _id} -> l == level end)
-    |> Enum.map(fn {_l, template_id} -> template_id end)
+    |> Enum.filter(fn {_id, l} -> l == level end)
+    |> Enum.map(fn {template_id, _l} -> template_id end)
   end
 
-  def build_game_board(template, square_id, game_board_numbers) when template != [] do
+  defp build_game_board(template, square_id, game_board_numbers) when template != [] do
     [head | tail_template] = template
-    [starting_number, solved_number] = String.split(head, " ")
-    starting_number = if starting_number == "0", do: nil, else: String.to_integer(starting_number)
+    {starting_number, solved_number} = head
+
+    starting_number = if starting_number == 0, do: nil, else: starting_number
 
     game_board_numbers = [
-      {square_id, starting_number, String.to_integer(solved_number)} | game_board_numbers
+      {square_id, starting_number, solved_number} | game_board_numbers
     ]
 
     build_game_board(tail_template, square_id + 1, game_board_numbers)
   end
 
-  def build_game_board(_template, _square_id, game_board_numbers) do
+  defp build_game_board(_template, _square_id, game_board_numbers) do
     Enum.reverse(game_board_numbers)
   end
 
@@ -51,10 +52,10 @@ defmodule Sudoku.Templates do
       game_numbers =
         Enum.zip([starting_numbers_list, solved_numbers_list])
         |> Enum.map(fn {starting_num, solved_num} ->
-          "#{starting_num} #{solved_num}"
+          {String.to_integer(starting_num), String.to_integer(solved_num)}
         end)
 
-      {{String.to_integer(level), String.to_integer(template_id)}, game_numbers}
+      {{String.to_integer(template_id), String.to_integer(level)}, game_numbers}
     end)
     |> Map.new()
   end

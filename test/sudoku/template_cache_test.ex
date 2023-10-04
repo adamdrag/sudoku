@@ -6,7 +6,7 @@ defmodule Sudoku.TemplateCacheTest do
     test "new/3" do
       templates = TemplatesCache.get_templates()
 
-      assert %{{0, 1} => _game_board} = templates
+      assert %{{0, 0} => _game_board} = templates
     end
   end
 end
